@@ -1,4 +1,4 @@
-name: linter
+name: phpunit
 on: [push]
 jobs:
   build:
@@ -9,6 +9,13 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest]
         php-versions: ['7.4']
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: 'my-secret-pw'
+        ports:
+          - 3306:3306
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -28,8 +35,8 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install composer
-        run: composer install --prefer-dist
+      - name: Prepare test
+        run: make prepare-test
 
-      - name: Run Linter
-        run: make linter
+      - name: Run phpUnit test
+        run: vendor/bin/phpunit
