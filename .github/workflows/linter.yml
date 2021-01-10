@@ -32,4 +32,6 @@ jobs:
         run: composer install --prefer-dist
 
       - name: Run Linter
-        run: make linter
+        run: |
+          composer valid
+          vendor/bin/phpcs
